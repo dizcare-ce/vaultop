@@ -1,0 +1,36 @@
+# vaultop example configuration
+# Copy this file to vaultop.yaml and adjust for your environment.
+
+version: "1"
+
+defaults:
+  # How often secrets should be rotated (e.g. 24h, 168h).
+  rotation_interval: 24h
+  # When true, no mutations are made — only actions are printed.
+  dry_run: false
+
+providers:
+  # AWS Secrets Manager
+  aws-prod:
+    type: aws
+    region: us-east-1
+    options:
+      profile: prod
+
+  # Google Cloud Secret Manager
+  gcp-staging:
+    type: gcp
+    project: my-gcp-project-id
+
+  # Azure Key Vault
+  azure-dev:
+    type: azure
+    options:
+      vault_url: https://my-vault.vault.azure.net/
+
+  # HashiCorp Vault
+  vault-internal:
+    type: vault
+    options:
+      address: https://vault.internal.example.com:8200
+      auth_method: token
