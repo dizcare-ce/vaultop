@@ -9,6 +9,7 @@ import (
 
 // Report writes a human-readable summary of rotation history to w.
 // Only entries for the provided keys are included; pass nil to include all.
+// Only entries at or after since are included; pass zero time to include all.
 func Report(w io.Writer, s *Store, keys []string, since time.Time) error {
 	keySet := make(map[string]bool, len(keys))
 	for _, k := range keys {
@@ -19,6 +20,7 @@ func Report(w io.Writer, s *Store, keys []string, since time.Time) error {
 	fmt.Fprintln(tw, "SECRET KEY\tPROVIDER\tROTATED AT\tSTATUS")
 	fmt.Fprintln(tw, "----------\t--------\t----------\t------")
 
+	var count int
 	for _, e := range s.All() {
 		if len(keySet) > 0 && !keySet[e.SecretKey] {
 			continue
@@ -36,6 +38,10 @@ func Report(w io.Writer, s *Store, keys []string, since time.Time) error {
 			e.RotatedAt.Format(time.RFC3339),
 			status,
 		)
+		count++
+	}
+	if count == 0 {
+		fmt.Fprintln(tw, "(no entries)")
 	}
 	return tw.Flush()
 }
