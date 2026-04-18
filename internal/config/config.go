@@ -62,7 +62,13 @@ func (c *Config) Validate() error {
 	if c.Version == "" {
 		return fmt.Errorf("version is required")
 	}
+	if len(c.Providers) == 0 {
+		return fmt.Errorf("at least one provider must be defined")
+	}
 	for name, p := range c.Providers {
+		if name == "" {
+			return fmt.Errorf("provider name must not be empty")
+		}
 		switch p.Type {
 		case ProviderAWS, ProviderGCP, ProviderAzure, ProviderVault:
 		default:
