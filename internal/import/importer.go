@@ -68,13 +68,29 @@ func Import(r io.Reader, opts Options) (map[string]string, error) {
 }
 
 // ImportFile opens the file at path and calls Import.
+// If opts.Format is empty, the format is inferred from the file extension
+// (.json -> JSON, .env -> env).
 func ImportFile(path string, opts Options) (map[string]string, error) {
+	if opts.Format == "" {
+		opts.Format = inferFormat(path)
+	}
 	f, err := os.Open(path)
 	if err != nil {
 		return nil, fmt.Errorf("open %q: %w", path, err)
 	}
 	defer f.Close()
 	return Import(f, opts)
+}
+
+// inferFormat guesses the Format from a file path's extension.
+func inferFormat(path string) Format {
+	if strings.HasSuffix(path, ".json") {
+		return FormatJSON
+	}
+	if strings.HasSuffix(path, ".env") {
+		return FormatEnv
+	}
+	return ""
 }
 
 func parseJSON(data []byte) (map[string]string, error) {
