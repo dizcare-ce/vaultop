@@ -43,5 +43,8 @@ func Report(w io.Writer, s *Store, keys []string, since time.Time) error {
 	if count == 0 {
 		fmt.Fprintln(tw, "(no entries)")
 	}
-	return tw.Flush()
+	if err := tw.Flush(); err != nil {
+		return fmt.Errorf("flushing report output: %w", err)
+	}
+	return nil
 }
