@@ -49,3 +49,14 @@ func Compare(before, after map[string]string) []Change {
 func HasChanges(before, after map[string]string) bool {
 	return len(Compare(before, after)) > 0
 }
+
+// FilterByKind returns only the changes matching the given ChangeKind.
+func FilterByKind(changes []Change, kind ChangeKind) []Change {
+	var filtered []Change
+	for _, c := range changes {
+		if c.Kind == kind {
+			filtered = append(filtered, c)
+		}
+	}
+	return filtered
+}
