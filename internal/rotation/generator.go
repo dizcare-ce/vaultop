@@ -28,6 +28,17 @@ func ErrorGenerator(msg string) ValueGenerator {
 	}
 }
 
+// RandomBytesGenerator returns a ValueGenerator that produces a cryptographically
+// random base64 string of the given byte length. It panics if n <= 0.
+func RandomBytesGenerator(n int) ValueGenerator {
+	if n <= 0 {
+		panic(fmt.Sprintf("rotation: RandomBytesGenerator requires n > 0, got %d", n))
+	}
+	return func(_ string) (string, error) {
+		return randomBase64(n)
+	}
+}
+
 func randomBase64(n int) (string, error) {
 	b := make([]byte, n)
 	if _, err := rand.Read(b); err != nil {
