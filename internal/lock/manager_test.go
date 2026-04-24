@@ -62,3 +62,26 @@ func TestManager_IndependentNames(t *testing.T) {
 	}
 	defer l2.Release()
 }
+
+func TestManager_ReleaseAllowsReacquire(t *testing.T) {
+	m, err := lock.NewManager(t.TempDir())
+	if err != nil {
+		t.Fatalf("NewManager: %v", err)
+	}
+
+	l, err := m.Acquire("rotation")
+	if err != nil {
+		t.Fatalf("first Acquire: %v", err)
+	}
+	l.Release()
+
+	l2, err := m.Acquire("rotation")
+	if err != nil {
+		t.Fatalf("re-Acquire after Release: %v", err)
+	}
+	defer l2.Release()
+
+	if !m.IsHeld("rotation") {
+		t.Fatal("expected lock to be held after re-acquire")
+	}
+}
