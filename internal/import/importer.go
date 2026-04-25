@@ -84,13 +84,14 @@ func ImportFile(path string, opts Options) (map[string]string, error) {
 
 // inferFormat guesses the Format from a file path's extension.
 func inferFormat(path string) Format {
-	if strings.HasSuffix(path, ".json") {
+	switch {
+	case strings.HasSuffix(path, ".json"):
 		return FormatJSON
-	}
-	if strings.HasSuffix(path, ".env") {
+	case strings.HasSuffix(path, ".env"):
 		return FormatEnv
+	default:
+		return ""
 	}
-	return ""
 }
 
 func parseJSON(data []byte) (map[string]string, error) {
@@ -103,14 +104,14 @@ func parseJSON(data []byte) (map[string]string, error) {
 
 func parseEnv(data []byte) (map[string]string, error) {
 	m := make(map[string]string)
-	for _, line := range strings.Split(string(data), "\n") {
+	for lineNum, line := range strings.Split(string(data), "\n") {
 		line = strings.TrimSpace(line)
 		if line == "" || strings.HasPrefix(line, "#") {
 			continue
 		}
 		parts := strings.SplitN(line, "=", 2)
 		if len(parts) != 2 {
-			return nil, fmt.Errorf("invalid env line: %q", line)
+			return nil, fmt.Errorf("invalid env line %d: %q", lineNum+1, line)
 		}
 		m[strings.TrimSpace(parts[0])] = strings.TrimSpace(parts[1])
 	}
