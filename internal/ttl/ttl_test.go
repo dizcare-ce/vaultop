@@ -64,6 +64,17 @@ func TestExpired_ReturnsExpiredKeys(t *testing.T) {
 	}
 }
 
+func TestExpired_NoneExpired(t *testing.T) {
+	m := ttl.New()
+	m.Set("a", time.Hour, epoch)
+	m.Set("b", 2*time.Hour, epoch)
+	// Check at epoch itself — nothing should be expired yet.
+	expired := m.Expired(epoch)
+	if len(expired) != 0 {
+		t.Errorf("expected no expired keys, got: %v", expired)
+	}
+}
+
 func TestDelete_RemovesEntry(t *testing.T) {
 	m := ttl.New()
 	m.Set("x", time.Hour, epoch)
