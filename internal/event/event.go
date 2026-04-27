@@ -57,6 +57,13 @@ func (b *Bus) Publish(e Event) {
 	}
 }
 
+// SubscriberCount returns the number of handlers registered for the given kind.
+func (b *Bus) SubscriberCount(kind Kind) int {
+	b.mu.RLock()
+	defer b.mu.RUnlock()
+	return len(b.handlers[kind])
+}
+
 // Reset removes all subscriptions.
 func (b *Bus) Reset() {
 	b.mu.Lock()
